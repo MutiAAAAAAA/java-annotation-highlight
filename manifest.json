@@ -1,0 +1,9 @@
+{
+	"id": "java-annotation-highlight",
+	"name": "Java Annotation Highlight",
+	"version": "1.0.0",
+	"minAppVersion": "1.4.0",
+	"description": "Customize colors for Java annotations (@...) and line comments (//...) in code blocks.",
+	"author": "Obsidian Annotation Highlight",
+	"isDesktopOnly": false
+}
