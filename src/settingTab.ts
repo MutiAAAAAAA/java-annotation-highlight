@@ -40,8 +40,23 @@ export class JavaHighlightSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
+			.setName("支持的语言")
+			.setDesc(
+				"逗号分隔的代码块语言（注解语法一致即可），如 java, kotlin, scala, groovy；kt 会映射为 kotlin",
+			)
+			.addText((text) =>
+				text
+					.setPlaceholder("java, kotlin, scala, groovy")
+					.setValue(this.plugin.settings.languages)
+					.onChange(async (value) => {
+						this.plugin.settings.languages = value;
+						await this.plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
 			.setName("自定义注解颜色")
-			.setDesc("为 Java 代码块中 @注解（如 @Override）设置颜色")
+			.setDesc("为支持语言中 @注解（如 @Override / @Autowired）设置颜色")
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.enableAnnotation)
@@ -72,7 +87,7 @@ export class JavaHighlightSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("自定义注释颜色")
-			.setDesc("为 Java 代码块中 // 行注释设置颜色")
+			.setDesc("为 // 行注释与 /* */ 块注释设置颜色")
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.enableComment)
@@ -97,6 +112,20 @@ export class JavaHighlightSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						if (!/^#[0-9A-Fa-f]{3,8}$/.test(value.trim())) return;
 						this.plugin.settings.commentColor = value.trim();
+						await this.plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName("HTML 注释")
+			.setDesc(
+				"为笔记正文与 html/xml 代码块中的 <!-- 注释 --> 着色（使用上方注释颜色）",
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.enableHtmlComment)
+					.onChange(async (value) => {
+						this.plugin.settings.enableHtmlComment = value;
 						await this.plugin.saveSettings();
 					}),
 			);

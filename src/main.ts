@@ -3,11 +3,29 @@ import type { Extension } from "@codemirror/state";
 import { createJavaHighlightExtension } from "./editorExtension";
 import {
 	DEFAULT_SETTINGS,
+	MARKUP_COMMENT_LANGUAGES,
+	parseLanguageList,
 	type JavaHighlightSettings,
 } from "./settings";
 import { JavaHighlightSettingTab } from "./settingTab";
 
 const STYLE_ID = "java-annotation-highlight-vars";
+
+function langSelectors(
+	langs: string[],
+	suffix: string,
+): string {
+	return langs
+		.map((lang) => {
+			const root = `.language-${lang}`;
+			return [
+				`.markdown-rendered ${root}${suffix}`,
+				`.markdown-preview-view ${root}${suffix}`,
+				`.cm-preview-code-block ${root}${suffix}`,
+			].join(",\n");
+		})
+		.join(",\n");
+}
 
 export default class JavaAnnotationHighlightPlugin extends Plugin {
 	settings: JavaHighlightSettings = DEFAULT_SETTINGS;
@@ -38,7 +56,7 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 	}
 
 	private rebuildEditorExtension() {
-		this.editorExtensions.length = 0;
+		this.editorExtensions.splice(0, this.editorExtensions.length);
 		if (this.settings.enableEditingView) {
 			this.editorExtensions.push(
 				createJavaHighlightExtension(() => this.settings),
@@ -59,10 +77,13 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 			commentColor,
 			enableAnnotation,
 			enableComment,
+			enableHtmlComment,
 			enableReadingView,
 			enableEditingView,
+			languages,
 		} = this.settings;
 
+		const jvmLangs = [...parseLanguageList(languages)];
 		const parts: string[] = [];
 
 		parts.push(`:root {
@@ -70,23 +91,25 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 	--jah-comment-color: ${commentColor};
 }`);
 
-		if (enableReadingView && enableAnnotation) {
+		if (enableReadingView && enableAnnotation && jvmLangs.length > 0) {
 			parts.push(`
-.markdown-rendered .language-java .token.annotation,
-.markdown-rendered .language-java .token.annotation .token,
-.markdown-preview-view .language-java .token.annotation,
-.markdown-preview-view .language-java .token.annotation .token,
-.cm-preview-code-block .language-java .token.annotation,
-.cm-preview-code-block .language-java .token.annotation .token {
+${langSelectors(jvmLangs, " .token.annotation")},
+${langSelectors(jvmLangs, " .token.annotation .token")} {
 	color: var(--jah-annotation-color) !important;
 }`);
 		}
 
-		if (enableReadingView && enableComment) {
+		if (enableReadingView && enableComment && jvmLangs.length > 0) {
 			parts.push(`
-.markdown-rendered .language-java .token.comment,
-.markdown-preview-view .language-java .token.comment,
-.cm-preview-code-block .language-java .token.comment {
+${langSelectors(jvmLangs, " .token.comment")} {
+	color: var(--jah-comment-color) !important;
+}`);
+		}
+
+		if (enableReadingView && enableHtmlComment) {
+			const markup = [...MARKUP_COMMENT_LANGUAGES];
+			parts.push(`
+${langSelectors(markup, " .token.comment")} {
 	color: var(--jah-comment-color) !important;
 }`);
 		}
@@ -98,7 +121,10 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 }`);
 		}
 
-		if (enableEditingView && enableComment) {
+		if (
+			enableEditingView &&
+			(enableComment || enableHtmlComment)
+		) {
 			parts.push(`
 .cm-jah-comment {
 	color: var(--jah-comment-color) !important;
