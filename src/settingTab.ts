@@ -16,6 +16,30 @@ export class JavaHighlightSettingTab extends PluginSettingTab {
 		containerEl.createEl("h2", { text: "Java Annotation Highlight" });
 
 		new Setting(containerEl)
+			.setName("阅读视图生效")
+			.setDesc("在阅读视图 / 实时预览已渲染的代码块中应用颜色")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.enableReadingView)
+					.onChange(async (value) => {
+						this.plugin.settings.enableReadingView = value;
+						await this.plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName("编辑视图生效")
+			.setDesc("在源码模式 / 实时预览编辑代码块时应用颜色")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.enableEditingView)
+					.onChange(async (value) => {
+						this.plugin.settings.enableEditingView = value;
+						await this.plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
 			.setName("自定义注解颜色")
 			.setDesc("为 Java 代码块中 @注解（如 @Override）设置颜色")
 			.addToggle((toggle) =>

@@ -17,9 +17,7 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 		this.applyStyles();
-		this.editorExtensions.push(
-			createJavaHighlightExtension(() => this.settings),
-		);
+		this.rebuildEditorExtension();
 		this.registerEditorExtension(this.editorExtensions);
 		this.addSettingTab(new JavaHighlightSettingTab(this.app, this));
 	}
@@ -35,11 +33,17 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 		this.applyStyles();
-		this.editorExtensions.length = 0;
-		this.editorExtensions.push(
-			createJavaHighlightExtension(() => this.settings),
-		);
+		this.rebuildEditorExtension();
 		this.app.workspace.updateOptions();
+	}
+
+	private rebuildEditorExtension() {
+		this.editorExtensions.length = 0;
+		if (this.settings.enableEditingView) {
+			this.editorExtensions.push(
+				createJavaHighlightExtension(() => this.settings),
+			);
+		}
 	}
 
 	applyStyles() {
@@ -50,8 +54,14 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 			document.head.appendChild(el);
 		}
 
-		const { annotationColor, commentColor, enableAnnotation, enableComment } =
-			this.settings;
+		const {
+			annotationColor,
+			commentColor,
+			enableAnnotation,
+			enableComment,
+			enableReadingView,
+			enableEditingView,
+		} = this.settings;
 
 		const parts: string[] = [];
 
@@ -60,7 +70,7 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 	--jah-comment-color: ${commentColor};
 }`);
 
-		if (enableAnnotation) {
+		if (enableReadingView && enableAnnotation) {
 			parts.push(`
 .markdown-rendered .language-java .token.annotation,
 .markdown-rendered .language-java .token.annotation .token,
@@ -69,19 +79,27 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 .cm-preview-code-block .language-java .token.annotation,
 .cm-preview-code-block .language-java .token.annotation .token {
 	color: var(--jah-annotation-color) !important;
-}
-.cm-jah-annotation {
-	color: var(--jah-annotation-color) !important;
 }`);
 		}
 
-		if (enableComment) {
+		if (enableReadingView && enableComment) {
 			parts.push(`
 .markdown-rendered .language-java .token.comment,
 .markdown-preview-view .language-java .token.comment,
 .cm-preview-code-block .language-java .token.comment {
 	color: var(--jah-comment-color) !important;
-}
+}`);
+		}
+
+		if (enableEditingView && enableAnnotation) {
+			parts.push(`
+.cm-jah-annotation {
+	color: var(--jah-annotation-color) !important;
+}`);
+		}
+
+		if (enableEditingView && enableComment) {
+			parts.push(`
 .cm-jah-comment {
 	color: var(--jah-comment-color) !important;
 }`);
