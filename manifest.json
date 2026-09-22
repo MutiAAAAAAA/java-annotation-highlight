@@ -1,9 +1,9 @@
 {
 	"id": "java-annotation-highlight",
 	"name": "Java Annotation Highlight",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"minAppVersion": "1.13.0",
-	"description": "自定义 JVM 注解（@...）与注释（//、/* */、<!-- -->）的颜色。",
+	"description": "自定义 JVM 注解（@...）与注释（//、/* */、<!-- -->）的颜色.",
 	"author": "悸節",
 	"isDesktopOnly": false
 }

@@ -1,6 +1,6 @@
 {
 	"name": "java-annotation-highlight",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"description": "Customize colors for Java annotations and comments in Obsidian code blocks.",
 	"main": "main.js",
 	"scripts": {

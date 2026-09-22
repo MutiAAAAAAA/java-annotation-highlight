@@ -287,20 +287,10 @@ function collectHtmlCommentHits(
 	return hits;
 }
 
-function markFor(
-	kind: "annotation" | "comment",
-	settings: JavaHighlightSettings,
-): Decoration {
-	const color =
-		kind === "annotation"
-			? settings.annotationColor
-			: settings.commentColor;
+function markFor(kind: "annotation" | "comment"): Decoration {
 	const cls =
 		kind === "annotation" ? "cm-jah-annotation" : "cm-jah-comment";
-	return Decoration.mark({
-		class: cls,
-		attributes: { style: `color: ${color} !important` },
-	});
+	return Decoration.mark({ class: cls });
 }
 
 function buildDecorations(
@@ -354,7 +344,7 @@ function buildDecorations(
 	let lastTo = -1;
 	for (const hit of allHits) {
 		if (hit.from < lastTo) continue;
-		builder.add(hit.from, hit.to, markFor(hit.kind, settings));
+		builder.add(hit.from, hit.to, markFor(hit.kind));
 		lastTo = hit.to;
 	}
 

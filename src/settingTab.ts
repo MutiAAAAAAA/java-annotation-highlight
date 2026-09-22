@@ -1,6 +1,5 @@
 import { App, PluginSettingTab, type SettingDefinitionItem } from "obsidian";
 import type JavaAnnotationHighlightPlugin from "./main";
-import type { JavaHighlightSettings } from "./settings";
 
 const HEX_COLOR = /^#[0-9A-Fa-f]{3,8}$/;
 
@@ -12,9 +11,7 @@ export class JavaHighlightSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	getSettingDefinitions(): SettingDefinitionItem<
-		keyof JavaHighlightSettings & string
-	>[] {
+	getSettingDefinitions(): SettingDefinitionItem[] {
 		return [
 			{
 				name: "阅读视图生效",

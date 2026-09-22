@@ -1,5 +1,5 @@
 /* Colors are set at runtime on document.body via CSS variables.
-   Feature toggles use body classes (jah-*). */
+   Feature toggles use body classes (jah-*). Avoid !important; win via specificity. */
 
 body {
 	--jah-annotation-color: #d19a66;
@@ -7,46 +7,48 @@ body {
 }
 
 /* --- Reading / rendered preview: annotations --- */
-body.jah-reading-annotation .markdown-rendered pre .token.annotation,
-body.jah-reading-annotation .markdown-rendered pre .token.annotation .token,
-body.jah-reading-annotation .markdown-preview-view pre .token.annotation,
-body.jah-reading-annotation .markdown-preview-view pre .token.annotation .token,
-body.jah-reading-annotation .cm-preview-code-block pre .token.annotation,
-body.jah-reading-annotation .cm-preview-code-block pre .token.annotation .token {
-	color: var(--jah-annotation-color) !important;
+body.jah-reading-annotation .markdown-rendered pre code span.token.annotation,
+body.jah-reading-annotation .markdown-rendered pre code span.token.annotation span.token,
+body.jah-reading-annotation .markdown-preview-view pre code span.token.annotation,
+body.jah-reading-annotation .markdown-preview-view pre code span.token.annotation span.token,
+body.jah-reading-annotation .cm-preview-code-block pre code span.token.annotation,
+body.jah-reading-annotation .cm-preview-code-block pre code span.token.annotation span.token {
+	color: var(--jah-annotation-color);
 }
 
 /* --- Reading / rendered preview: C-style comments --- */
-body.jah-reading-comment .markdown-rendered pre .token.comment,
-body.jah-reading-comment .markdown-preview-view pre .token.comment,
-body.jah-reading-comment .cm-preview-code-block pre .token.comment {
-	color: var(--jah-comment-color) !important;
+body.jah-reading-comment .markdown-rendered pre code span.token.comment,
+body.jah-reading-comment .markdown-preview-view pre code span.token.comment,
+body.jah-reading-comment .cm-preview-code-block pre code span.token.comment {
+	color: var(--jah-comment-color);
 }
 
 /* --- Reading: HTML/XML fence comments --- */
-body.jah-reading-html-comment .markdown-rendered .language-html .token.comment,
-body.jah-reading-html-comment .markdown-rendered .language-htm .token.comment,
-body.jah-reading-html-comment .markdown-rendered .language-xml .token.comment,
-body.jah-reading-html-comment .markdown-rendered .language-svg .token.comment,
-body.jah-reading-html-comment .markdown-rendered .language-vue .token.comment,
-body.jah-reading-html-comment .markdown-preview-view .language-html .token.comment,
-body.jah-reading-html-comment .markdown-preview-view .language-htm .token.comment,
-body.jah-reading-html-comment .markdown-preview-view .language-xml .token.comment,
-body.jah-reading-html-comment .markdown-preview-view .language-svg .token.comment,
-body.jah-reading-html-comment .markdown-preview-view .language-vue .token.comment,
-body.jah-reading-html-comment .cm-preview-code-block .language-html .token.comment,
-body.jah-reading-html-comment .cm-preview-code-block .language-htm .token.comment,
-body.jah-reading-html-comment .cm-preview-code-block .language-xml .token.comment,
-body.jah-reading-html-comment .cm-preview-code-block .language-svg .token.comment,
-body.jah-reading-html-comment .cm-preview-code-block .language-vue .token.comment {
-	color: var(--jah-comment-color) !important;
+body.jah-reading-html-comment .markdown-rendered pre code.language-html span.token.comment,
+body.jah-reading-html-comment .markdown-rendered pre code.language-htm span.token.comment,
+body.jah-reading-html-comment .markdown-rendered pre code.language-xml span.token.comment,
+body.jah-reading-html-comment .markdown-rendered pre code.language-svg span.token.comment,
+body.jah-reading-html-comment .markdown-rendered pre code.language-vue span.token.comment,
+body.jah-reading-html-comment .markdown-preview-view pre code.language-html span.token.comment,
+body.jah-reading-html-comment .markdown-preview-view pre code.language-htm span.token.comment,
+body.jah-reading-html-comment .markdown-preview-view pre code.language-xml span.token.comment,
+body.jah-reading-html-comment .markdown-preview-view pre code.language-svg span.token.comment,
+body.jah-reading-html-comment .markdown-preview-view pre code.language-vue span.token.comment,
+body.jah-reading-html-comment .cm-preview-code-block pre code.language-html span.token.comment,
+body.jah-reading-html-comment .cm-preview-code-block pre code.language-htm span.token.comment,
+body.jah-reading-html-comment .cm-preview-code-block pre code.language-xml span.token.comment,
+body.jah-reading-html-comment .cm-preview-code-block pre code.language-svg span.token.comment,
+body.jah-reading-html-comment .cm-preview-code-block pre code.language-vue span.token.comment {
+	color: var(--jah-comment-color);
 }
 
 /* --- Editing view: CodeMirror mark decorations --- */
-body.jah-editing-annotation .cm-jah-annotation {
-	color: var(--jah-annotation-color) !important;
+body.jah-editing-annotation span.cm-jah-annotation,
+body.jah-editing-annotation .cm-line span.cm-jah-annotation {
+	color: var(--jah-annotation-color);
 }
 
-body.jah-editing-comment .cm-jah-comment {
-	color: var(--jah-comment-color) !important;
+body.jah-editing-comment span.cm-jah-comment,
+body.jah-editing-comment .cm-line span.cm-jah-comment {
+	color: var(--jah-comment-color);
 }
