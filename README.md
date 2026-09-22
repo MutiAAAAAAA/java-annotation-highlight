@@ -77,11 +77,10 @@ npm install
 npm run dev
 ```
 
-## Privacy
+## Compatibility
 
-- No analytics / telemetry
-- No remote code loading
-- No network access required
+- Requires Obsidian **1.13.0+** (declarative settings API).
+- No telemetry, ads, or network access.
 
 ## License
 

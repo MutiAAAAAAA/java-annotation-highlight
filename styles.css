@@ -1,2 +1,52 @@
-/* Token mark classes used by the CodeMirror editor extension.
-   Colors are applied by the stylesheet injected from plugin settings. */
+/* Colors are set at runtime on document.body via CSS variables.
+   Feature toggles use body classes (jah-*). */
+
+body {
+	--jah-annotation-color: #d19a66;
+	--jah-comment-color: #7ec699;
+}
+
+/* --- Reading / rendered preview: annotations --- */
+body.jah-reading-annotation .markdown-rendered pre .token.annotation,
+body.jah-reading-annotation .markdown-rendered pre .token.annotation .token,
+body.jah-reading-annotation .markdown-preview-view pre .token.annotation,
+body.jah-reading-annotation .markdown-preview-view pre .token.annotation .token,
+body.jah-reading-annotation .cm-preview-code-block pre .token.annotation,
+body.jah-reading-annotation .cm-preview-code-block pre .token.annotation .token {
+	color: var(--jah-annotation-color) !important;
+}
+
+/* --- Reading / rendered preview: C-style comments --- */
+body.jah-reading-comment .markdown-rendered pre .token.comment,
+body.jah-reading-comment .markdown-preview-view pre .token.comment,
+body.jah-reading-comment .cm-preview-code-block pre .token.comment {
+	color: var(--jah-comment-color) !important;
+}
+
+/* --- Reading: HTML/XML fence comments --- */
+body.jah-reading-html-comment .markdown-rendered .language-html .token.comment,
+body.jah-reading-html-comment .markdown-rendered .language-htm .token.comment,
+body.jah-reading-html-comment .markdown-rendered .language-xml .token.comment,
+body.jah-reading-html-comment .markdown-rendered .language-svg .token.comment,
+body.jah-reading-html-comment .markdown-rendered .language-vue .token.comment,
+body.jah-reading-html-comment .markdown-preview-view .language-html .token.comment,
+body.jah-reading-html-comment .markdown-preview-view .language-htm .token.comment,
+body.jah-reading-html-comment .markdown-preview-view .language-xml .token.comment,
+body.jah-reading-html-comment .markdown-preview-view .language-svg .token.comment,
+body.jah-reading-html-comment .markdown-preview-view .language-vue .token.comment,
+body.jah-reading-html-comment .cm-preview-code-block .language-html .token.comment,
+body.jah-reading-html-comment .cm-preview-code-block .language-htm .token.comment,
+body.jah-reading-html-comment .cm-preview-code-block .language-xml .token.comment,
+body.jah-reading-html-comment .cm-preview-code-block .language-svg .token.comment,
+body.jah-reading-html-comment .cm-preview-code-block .language-vue .token.comment {
+	color: var(--jah-comment-color) !important;
+}
+
+/* --- Editing view: CodeMirror mark decorations --- */
+body.jah-editing-annotation .cm-jah-annotation {
+	color: var(--jah-annotation-color) !important;
+}
+
+body.jah-editing-comment .cm-jah-comment {
+	color: var(--jah-comment-color) !important;
+}

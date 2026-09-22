@@ -5,7 +5,7 @@ export interface JavaHighlightSettings {
 	enableComment: boolean;
 	/** Color <!-- ... --> in markdown and html/xml code blocks */
 	enableHtmlComment: boolean;
-	/** Apply Prism CSS overrides in Reading / Live Preview rendered blocks */
+	/** Apply styles.css body classes for Reading / Live Preview rendered blocks */
 	enableReadingView: boolean;
 	/** Apply CodeMirror decorations while editing source / live-preview fences */
 	enableEditingView: boolean;

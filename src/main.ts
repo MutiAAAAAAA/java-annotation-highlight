@@ -3,32 +3,20 @@ import type { Extension } from "@codemirror/state";
 import { createJavaHighlightExtension } from "./editorExtension";
 import {
 	DEFAULT_SETTINGS,
-	MARKUP_COMMENT_LANGUAGES,
-	parseLanguageList,
 	type JavaHighlightSettings,
 } from "./settings";
 import { JavaHighlightSettingTab } from "./settingTab";
 
-const STYLE_ID = "java-annotation-highlight-vars";
-
-function langSelectors(
-	langs: string[],
-	suffix: string,
-): string {
-	return langs
-		.map((lang) => {
-			const root = `.language-${lang}`;
-			return [
-				`.markdown-rendered ${root}${suffix}`,
-				`.markdown-preview-view ${root}${suffix}`,
-				`.cm-preview-code-block ${root}${suffix}`,
-			].join(",\n");
-		})
-		.join(",\n");
-}
+const BODY_CLASSES = [
+	"jah-reading-annotation",
+	"jah-reading-comment",
+	"jah-reading-html-comment",
+	"jah-editing-annotation",
+	"jah-editing-comment",
+] as const;
 
 export default class JavaAnnotationHighlightPlugin extends Plugin {
-	settings: JavaHighlightSettings = DEFAULT_SETTINGS;
+	settings: JavaHighlightSettings = { ...DEFAULT_SETTINGS };
 	/** Mutated in place so Obsidian picks up setting changes via updateOptions(). */
 	private readonly editorExtensions: Extension[] = [];
 
@@ -41,18 +29,37 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 	}
 
 	onunload() {
-		document.getElementById(STYLE_ID)?.remove();
+		this.clearBodyStyles();
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		const data: unknown = await this.loadData();
+		const loaded =
+			data !== null && typeof data === "object"
+				? (data as Partial<JavaHighlightSettings>)
+				: {};
+		this.settings = { ...DEFAULT_SETTINGS, ...loaded };
+	}
+
+	/**
+	 * Persist settings. Also used by declarative settings controls (they call
+	 * plugin.saveData), so side effects for CSS / editor extensions live here.
+	 */
+	async saveData(data: unknown): Promise<void> {
+		await super.saveData(data);
+		if (data !== null && typeof data === "object") {
+			this.settings = {
+				...DEFAULT_SETTINGS,
+				...(data as Partial<JavaHighlightSettings>),
+			};
+		}
+		this.applyStyles();
+		this.rebuildEditorExtension();
+		this.app.workspace.updateOptions();
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		this.applyStyles();
-		this.rebuildEditorExtension();
-		this.app.workspace.updateOptions();
 	}
 
 	private rebuildEditorExtension() {
@@ -65,13 +72,6 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 	}
 
 	applyStyles() {
-		let el = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
-		if (!el) {
-			el = document.createElement("style");
-			el.id = STYLE_ID;
-			document.head.appendChild(el);
-		}
-
 		const {
 			annotationColor,
 			commentColor,
@@ -80,57 +80,41 @@ export default class JavaAnnotationHighlightPlugin extends Plugin {
 			enableHtmlComment,
 			enableReadingView,
 			enableEditingView,
-			languages,
 		} = this.settings;
 
-		const jvmLangs = [...parseLanguageList(languages)];
-		const parts: string[] = [];
+		document.body.style.setProperty(
+			"--jah-annotation-color",
+			annotationColor,
+		);
+		document.body.style.setProperty("--jah-comment-color", commentColor);
 
-		parts.push(`:root {
-	--jah-annotation-color: ${annotationColor};
-	--jah-comment-color: ${commentColor};
-}`);
+		document.body.classList.toggle(
+			"jah-reading-annotation",
+			enableReadingView && enableAnnotation,
+		);
+		document.body.classList.toggle(
+			"jah-reading-comment",
+			enableReadingView && enableComment,
+		);
+		document.body.classList.toggle(
+			"jah-reading-html-comment",
+			enableReadingView && enableHtmlComment,
+		);
+		document.body.classList.toggle(
+			"jah-editing-annotation",
+			enableEditingView && enableAnnotation,
+		);
+		document.body.classList.toggle(
+			"jah-editing-comment",
+			enableEditingView && (enableComment || enableHtmlComment),
+		);
+	}
 
-		if (enableReadingView && enableAnnotation && jvmLangs.length > 0) {
-			parts.push(`
-${langSelectors(jvmLangs, " .token.annotation")},
-${langSelectors(jvmLangs, " .token.annotation .token")} {
-	color: var(--jah-annotation-color) !important;
-}`);
+	private clearBodyStyles() {
+		for (const cls of BODY_CLASSES) {
+			document.body.classList.remove(cls);
 		}
-
-		if (enableReadingView && enableComment && jvmLangs.length > 0) {
-			parts.push(`
-${langSelectors(jvmLangs, " .token.comment")} {
-	color: var(--jah-comment-color) !important;
-}`);
-		}
-
-		if (enableReadingView && enableHtmlComment) {
-			const markup = [...MARKUP_COMMENT_LANGUAGES];
-			parts.push(`
-${langSelectors(markup, " .token.comment")} {
-	color: var(--jah-comment-color) !important;
-}`);
-		}
-
-		if (enableEditingView && enableAnnotation) {
-			parts.push(`
-.cm-jah-annotation {
-	color: var(--jah-annotation-color) !important;
-}`);
-		}
-
-		if (
-			enableEditingView &&
-			(enableComment || enableHtmlComment)
-		) {
-			parts.push(`
-.cm-jah-comment {
-	color: var(--jah-comment-color) !important;
-}`);
-		}
-
-		el.textContent = parts.join("\n");
+		document.body.style.removeProperty("--jah-annotation-color");
+		document.body.style.removeProperty("--jah-comment-color");
 	}
 }

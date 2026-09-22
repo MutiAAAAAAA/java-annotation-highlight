@@ -1,0 +1,83 @@
+name: Release Obsidian plugin
+
+# Push a tag like v1.2.2 (must match manifest.json version without the v prefix).
+# Builds the plugin, attests provenance, and publishes a GitHub Release tagged
+# with the bare version (1.2.2) that Obsidian downloads from.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF##*/}"
+          VERSION="${TAG#v}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify manifest version matches tag
+        run: |
+          MANIFEST_VERSION="$(node -e 'process.stdout.write(require("./manifest.json").version)')"
+          if [ "$MANIFEST_VERSION" != "${{ steps.version.outputs.version }}" ]; then
+            echo "manifest.json version ($MANIFEST_VERSION) does not match tag (${{ steps.version.outputs.version }})"
+            exit 1
+          fi
+
+      - name: Collect release artefacts
+        run: |
+          mkdir -p release
+          cp main.js manifest.json styles.css release/
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            release/main.js
+            release/manifest.json
+            release/styles.css
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          body: |
+            Java Annotation Highlight ${{ steps.version.outputs.version }}
+
+            Installable assets: `main.js`, `manifest.json`, `styles.css`.
+            Each file includes a GitHub build provenance attestation.
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          files: |
+            release/main.js
+            release/manifest.json
+            release/styles.css
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
