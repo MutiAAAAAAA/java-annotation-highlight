@@ -3,7 +3,7 @@
 	"name": "Java Annotation Highlight",
 	"version": "1.2.1",
 	"minAppVersion": "1.4.0",
-	"description": "Customize colors for JVM annotations (@...) and comments (//, /* */, <!-- -->) in Obsidian.",
-	"author": "Obsidian Annotation Highlight",
+	"description": "Customize colors for JVM annotations (@...) and comments (//, /* */, <!-- -->).",
+	"author": "悸節",
 	"isDesktopOnly": false
 }

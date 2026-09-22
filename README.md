@@ -1,55 +1,88 @@
 # Java Annotation Highlight
 
-Obsidian 插件：自定义 Java 代码块中 **注解**（`@Override`）和 **行注释**（`// ...`）的颜色。
+Customize colors for JVM-style **annotations** (`@Override`) and **comments** (`//`, `/* */`, `<!-- -->`) in Obsidian code blocks and notes.
 
-## 功能
+This plugin does **not** collect telemetry, show ads, or make network requests. All highlighting runs locally.
 
-- 自定义 `@注解` 颜色（默认主题下通常为灰色）
-- 自定义 `//` 行注释颜色
-- 支持阅读视图 / 实时预览（Prism）与源码编辑（CodeMirror）
-- 设置页可开关并选择颜色
+## Features
 
-## 安装
+- Custom colors for `@annotations` (e.g. `@Autowired`, `@Bean`)
+- Custom colors for `//` line comments and `/* */` block comments
+- Optional HTML comments: `<!-- ... -->` in note body and html/xml fences
+- Works in **Reading view** and **Editing** (source / live preview)
+- Configurable languages (default: `java, kotlin, scala, groovy`)
+- Independent toggles for reading view vs editing view
 
-### 手动安装
+## Demo
 
-1. 在本目录执行：
+````markdown
+```java
+@Component
+public class Demo {
+    // line comment
+    /* block comment */
+    @Bean
+    public String hello() {
+        return "hi";
+    }
+}
+```
+````
+
+```markdown
+<!-- section note -->
+```
+
+## Settings
+
+Open **Settings → Java Annotation Highlight**:
+
+| Setting | Description |
+| --- | --- |
+| Reading view | Apply colors to rendered / preview code blocks |
+| Editing view | Apply colors while editing fences / markdown |
+| Languages | Comma-separated fence languages (`kt` → `kotlin`) |
+| Annotation color | Color for `@Name` |
+| Comment color | Color for `//` and `/* */` |
+| HTML comments | Color `<!-- -->` using the comment color |
+
+## Install
+
+### From Community Plugins (after approval)
+
+1. Settings → Community plugins → Browse
+2. Search **Java Annotation Highlight**
+3. Install and enable
+
+### Manual install
+
+1. Build:
    ```bash
    npm install
    npm run build
    ```
-2. 将以下文件复制到库的插件目录：
-   ```
+2. Copy into your vault:
+   ```text
    <Vault>/.obsidian/plugins/java-annotation-highlight/
      ├── main.js
      ├── manifest.json
      └── styles.css
    ```
-3. 打开 Obsidian → 设置 → 第三方插件 → 启用 **Java Annotation Highlight**
+3. Enable the plugin in Community plugins.
 
-### 开发模式
+## Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-用符号链接或直接把本仓库放到 `plugins/java-annotation-highlight` 下即可热更新。
+## Privacy
 
-## 使用
+- No analytics / telemetry
+- No remote code loading
+- No network access required
 
-1. 启用插件后，设置中打开 **Java Annotation Highlight**
-2. 用颜色选择器或十六进制值设置注解 / 注释颜色
-3. 在笔记中使用：
+## License
 
-````markdown
-```java
-@Override
-public void run() {
-    // 这是注释
-    System.out.println("hi");
-}
-```
-````
-
-注解和 `//` 注释会按你设置的颜色显示。
+MIT © 悸節
